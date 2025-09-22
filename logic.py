@@ -202,6 +202,8 @@ def get_advice(crop, weather, land_type, district):
     
     return " ".join(advice_parts)
 
+
+
 # Simple function to simulate what the app expects
 def get_advice_simple(crop, weather, land_type, district):
     """Simplified version that matches the expected function signature"""
