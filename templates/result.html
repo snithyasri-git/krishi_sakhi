@@ -106,10 +106,230 @@
     .detail-item b {
       color: #2b8a3e;
     }
+
+    /* Floating AI Icon Styles */
+    .ai-chat-icon {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: #2b8a3e;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(43, 138, 62, 0.3);
+      z-index: 1000;
+      transition: all 0.3s ease;
+      border: 3px solid white;
+    }
+    
+    .ai-chat-icon:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 25px rgba(43, 138, 62, 0.4);
+    }
+    
+    .ai-chat-icon svg {
+      width: 30px;
+      height: 30px;
+      fill: white;
+    }
+
+    /* Chatbot Container */
+    .chatbot-container {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 350px;
+      height: 500px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      border: 2px solid #2b8a3e;
+    }
+    
+    .chatbot-container.active {
+      display: flex;
+      animation: slideUp 0.3s ease;
+    }
+    
+    .chatbot-header {
+      background: #2b8a3e;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .close-chat {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .close-chat:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .chatbot-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      background: #f9f9f9;
+    }
+    
+    .message {
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 15px;
+      max-width: 85%;
+      word-wrap: break-word;
+    }
+    
+    .user-message {
+      background: #2b8a3e;
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 5px;
+    }
+    
+    .bot-message {
+      background: #e8f5e8;
+      margin-right: auto;
+      border-bottom-left-radius: 5px;
+    }
+    
+    .suggestions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    
+    .suggestion-chip {
+      background: white;
+      border: 1px solid #2b8a3e;
+      color: #2b8a3e;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      text-align: left;
+    }
+    
+    .suggestion-chip:hover {
+      background: #2b8a3e;
+      color: white;
+    }
+    
+    .chatbot-input {
+      display: flex;
+      padding: 15px;
+      background: white;
+      border-top: 1px solid #ddd;
+      gap: 10px;
+    }
+    
+    .chatbot-input input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      outline: none;
+    }
+    
+    .chatbot-input input:focus {
+      border-color: #2b8a3e;
+    }
+    
+    .chatbot-input button {
+      background: #2b8a3e;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .chatbot-input button:hover:not(:disabled) {
+      background: #247332;
+    }
+    
+    .chatbot-input button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      color: #666;
+      font-style: italic;
+    }
+    
+    .typing-dots {
+      display: inline-flex;
+      margin-left: 5px;
+    }
+    
+    .typing-dots span {
+      animation: typing 1.4s infinite;
+      margin: 0 1px;
+    }
+    
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-5px);
+      }
+    }
+    
     @keyframes fadeIn {
       from {opacity: 0; transform: translateY(20px);}
       to {opacity: 1; transform: translateY(0);}
     }
+    
     @media (max-width: 600px) {
       .weather-cards {
         flex-direction: column;
@@ -120,6 +340,15 @@
       .farmer-details {
         grid-template-columns: 1fr;
       }
+      .chatbot-container {
+        width: 90vw;
+        right: 5vw;
+        bottom: 80px;
+      }
+      .ai-chat-icon {
+        bottom: 20px;
+        right: 20px;
+      }
     }
   </style>
 </head>
@@ -128,7 +357,7 @@
     <h1>🌱 Farmer Advisory Report</h1>
 
     <div class="section">
-      <h3>👨‍� Farmer Information</h3>
+      <h3>👨‍🌾 Farmer Information</h3>
       <div class="farmer-details" id="farmerInfo"></div>
     </div>
 
@@ -153,7 +382,31 @@
     </div>
   </div>
 
-    <script>
+  <!-- Floating AI Chat Icon -->
+  <div class="ai-chat-icon" id="aiChatIcon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6l-2 2V4h16v12z"/>
+    </svg>
+  </div>
+
+  <!-- Chatbot Container -->
+  <div class="chatbot-container" id="chatbotContainer">
+    <div class="chatbot-header">
+      <span>🌱 Krishi Sakhi AI</span>
+      <button class="close-chat" id="closeChat">×</button>
+    </div>
+    
+    <div class="chatbot-messages" id="chatMessages">
+      <!-- Messages will be added here dynamically -->
+    </div>
+    
+    <div class="chatbot-input">
+      <input type="text" id="chatInput" placeholder="Ask about farming..." />
+      <button id="sendButton">Send</button>
+    </div>
+  </div>
+
+  <script>
     const params = new URLSearchParams(window.location.search);
 
     // Farmer info
@@ -186,6 +439,175 @@
     adviceHTML += "</ul>";
 
     document.getElementById("adviceBox").innerHTML = adviceHTML;
+
+    // AI Chatbot functionality
+    const aiChatIcon = document.getElementById('aiChatIcon');
+    const chatbotContainer = document.getElementById('chatbotContainer');
+    const closeChat = document.getElementById('closeChat');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendButton = document.getElementById('sendButton');
+
+    // Store farmer context for the chatbot
+    const farmerContext = {
+      crop: params.get("crop") || "Not specified",
+      district: params.get("district") || "Not specified",
+      landType: params.get("landType") || "Not specified",
+      weather: `${params.get("temp") || "N/A"}°C, ${params.get("condition") || "N/A"}`
+    };
+
+    // Crop-specific suggestions
+    const cropSuggestions = {
+      paddy: [
+        "Best fertilizers for paddy in rainy season",
+        "How to control pests in paddy fields?",
+        "Optimal water management for paddy",
+        "When to harvest paddy in Kerala?"
+      ],
+      coconut: [
+        "Coconut tree fertilizer schedule",
+        "How to prevent coconut mite infestation?",
+        "Intercropping with coconut trees",
+        "Coconut harvesting techniques"
+      ],
+      banana: [
+        "Banana plant care during monsoon",
+        "Best banana varieties for Kerala",
+        "How to control banana bunchy top virus?",
+        "Banana plantation spacing guide"
+      ],
+      default: [
+        "Best farming practices for current weather",
+        "Soil improvement techniques",
+        "Water conservation methods",
+        "Organic farming tips for Kerala"
+      ]
+    };
+
+    function showSuggestions() {
+      const suggestions = cropSuggestions[farmerContext.crop.toLowerCase()] || cropSuggestions.default;
+      
+      const suggestionsHTML = `
+        <div class="suggestions">
+          <div style="font-size: 14px; color: #666; margin-bottom: 8px;">💡 Try asking:</div>
+          ${suggestions.map(suggestion => 
+            `<div class="suggestion-chip" onclick="askSuggestion('${suggestion}')">${suggestion}</div>`
+          ).join('')}
+        </div>
+      `;
+      
+      addMessage(suggestionsHTML, false);
+    }
+
+    function askSuggestion(question) {
+      chatInput.value = question;
+      sendMessage();
+    }
+
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+      messageDiv.innerHTML = text;
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message bot-message typing-indicator';
+      typingDiv.id = 'typingIndicator';
+      typingDiv.innerHTML = 'Krishi Sakhi is typing<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>';
+      chatMessages.appendChild(typingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typingIndicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    async function sendMessage() {
+      const message = chatInput.value.trim();
+      if (!message) return;
+
+      // Add user message
+      addMessage(message, true);
+      chatInput.value = '';
+      sendButton.disabled = true;
+
+      // Show typing indicator
+      showTypingIndicator();
+
+      try {
+        const response = await fetch('/ask_gemini', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            question: message,
+            context: farmerContext
+          })
+        });
+
+        hideTypingIndicator();
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          addMessage(data.answer);
+          // Show suggestions after AI response
+          setTimeout(showSuggestions, 100);
+        } else {
+          addMessage('Sorry, I encountered an error. Please try again later.');
+        }
+      } catch (error) {
+        console.error('Chat error:', error);
+        hideTypingIndicator();
+        addMessage('Sorry, I am unable to respond at the moment. Please check your connection.');
+      } finally {
+        sendButton.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    // Initialize chatbot with welcome message
+    function initializeChatbot() {
+      chatMessages.innerHTML = '';
+      addMessage(`Hello! I'm Krishi Sakhi AI. I can help you with ${farmerContext.crop} cultivation in ${farmerContext.district}. What would you like to know?`);
+      showSuggestions();
+    }
+
+    // Event listeners
+    aiChatIcon.addEventListener('click', () => {
+      chatbotContainer.classList.add('active');
+      initializeChatbot();
+      setTimeout(() => chatInput.focus(), 300);
+    });
+
+    closeChat.addEventListener('click', () => {
+      chatbotContainer.classList.remove('active');
+    });
+
+    sendButton.addEventListener('click', sendMessage);
+
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    // Close chatbot when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!chatbotContainer.contains(e.target) && !aiChatIcon.contains(e.target)) {
+        chatbotContainer.classList.remove('active');
+      }
+    });
+
+    // Make askSuggestion function available globally
+    window.askSuggestion = askSuggestion;
   </script>
 </body>
 </html>
