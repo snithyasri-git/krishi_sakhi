@@ -4,143 +4,243 @@ from logic import get_advice
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
+from language_support import language_manager
 
 load_dotenv()
 
 app = Flask(__name__)
 
-# Configure Gemini AI
+# Configure Gemini AI with better error handling
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    print("✅ Gemini AI configured successfully")
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        print("✅ Gemini AI configured successfully")
+        # Test the configuration
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        print("✅ Gemini AI model loaded successfully")
+    except Exception as e:
+        print(f"❌ Gemini AI configuration failed: {e}")
+        GEMINI_API_KEY = None
 else:
-    print("❌ GEMINI_API_KEY not found")
+    print("❌ GEMINI_API_KEY not found in environment variables")
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
+@app.route("/set_language", methods=["POST"])
+def set_language():
+    data = request.json
+    language = data.get("language", "en")
+    language_manager.set_language(language)
+    return jsonify({"status": "success", "language": language})
+
 @app.route("/save_profile", methods=["POST"])
 def save_profile():
-    data = request.json
-    farmer_name = data.get("farmerName")
-    phone = data.get("phone")
-    district = data.get("district")
-    village = data.get("village")
-    land_type = data.get("landType")
-    crop = data.get("crop")
+    try:
+        data = request.json
+        farmer_name = data.get("farmerName")
+        phone = data.get("phone")
+        district = data.get("district")
+        village = data.get("village")
+        land_type = data.get("landType")
+        crop = data.get("crop")
 
-    weather = get_weather(district)
-    advice = get_advice(crop, weather, land_type, district)
+        print(f"📝 Received data: {data}")
 
-    return jsonify({
-        "farmerName": farmer_name,
-        "phone": phone,
-        "district": district,
-        "village": village,
-        "landType": land_type,
-        "crop": crop,
-        "temp": weather.get("temp"),
-        "condition": weather.get("condition"),
-        "rain_prob": weather.get("rain_prob", 0),
-        "humidity": weather.get("humidity", 0),
-        "wind_speed": weather.get("wind_speed", 0),
-        "advice": advice
-    })
+        weather = get_weather(district)
+        advice = get_advice(crop, weather, land_type, district)
+
+        print(f"🌤️ Weather data: {weather}")
+        print(f"💡 Advice: {advice}")
+
+        # Translate weather information based on current language
+        current_language = language_manager.get_current_language()
+        
+        if current_language == "ml":
+            condition_translations = {
+                "Sunny": "വെയിലുള്ള", "Clear": "തെളിഞ്ഞ", "Cloudy": "മേഘാവൃതം", 
+                "Rainy": "മഴയുള്ള", "Partly cloudy": "ഭാഗികമേഘാവൃതം", "Overcast": "കുളിരുള്ള",
+                "Mist": "മൂടൽമഞ്ഞ്", "Fog": "പുകപ്പടലം", "Drizzle": "തുള്ളിമഴ",
+                "Light rain": "ലഘുമഴ", "Moderate rain": "മധ്യമമഴ", "Heavy rain": "കനമഴ"
+            }
+            weather["condition"] = condition_translations.get(weather.get("condition"), weather.get("condition"))
+            
+        elif current_language == "ta":
+            condition_translations = {
+                "Sunny": "வெயிலான", "Clear": "தெளிவான", "Cloudy": "மேகமூட்டம்", 
+                "Rainy": "மழையுள்ள", "Partly cloudy": "பகுதி மேகமூட்டம்", "Overcast": "முழுமேகமூட்டம்",
+                "Mist": "மூடுபனி", "Fog": "பனிப்புகல்", "Drizzle": "தூறல்",
+                "Light rain": "இலேசான மழை", "Moderate rain": "மிதமான மழை", "Heavy rain": "கனமழை"
+            }
+            weather["condition"] = condition_translations.get(weather.get("condition"), weather.get("condition"))
+
+        return jsonify({
+            "farmerName": farmer_name,
+            "phone": phone,
+            "district": district,
+            "village": village,
+            "landType": land_type,
+            "crop": crop,
+            "temp": weather.get("temp"),
+            "condition": weather.get("condition"),
+            "rain_prob": weather.get("rain_prob", 0),
+            "humidity": weather.get("humidity", 0),
+            "wind_speed": weather.get("wind_speed", 0),
+            "advice": advice,
+            "language": current_language
+        })
+    
+    except Exception as e:
+        print(f"❌ Error in save_profile: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/result")
 def result():
     return render_template("result.html")
 
-# UPDATED GEMINI ROUTE WITH BULLET POINT FORMATTING
 @app.route("/ask_gemini", methods=["POST"])
 def ask_gemini():
     try:
+        print("🤖 Gemini AI endpoint called")
+        
         if not GEMINI_API_KEY:
-            return jsonify({"error": "Gemini API key not configured"}), 500
+            error_msg = "❌ Gemini API key not configured"
+            print(error_msg)
+            return jsonify({"error": error_msg}), 500
             
         data = request.json
-        print(data,"dkfjklgfdjjgl")
+        print(f"📨 Received data: {data}")
+        
         user_question = data.get("question", "").strip()
         farmer_context = data.get("context", {})
+        current_language = language_manager.get_current_language()
         
         if not user_question:
-            return jsonify({"error": "No question provided"}), 400
+            error_msg = "❌ No question provided"
+            print(error_msg)
+            return jsonify({"error": error_msg}), 400
         
-        # UPDATED PROMPT FOR STRICT BULLET POINT FORMATTING
+        print(f"🌐 Current language: {current_language}")
+        print(f"❓ Question: {user_question}")
+        
+        # Update prompt based on language
+        language_instruction = ""
+        if current_language == "ml":
+            language_instruction = "IMPORTANT: Respond in Malayalam language using Malayalam script. Use simple agricultural terms."
+        elif current_language == "ta":
+            language_instruction = "IMPORTANT: Respond in Tamil language using Tamil script. Use simple agricultural terms."
+        
         prompt = f"""
-        You are Krishi Sakhi, an agricultural assistant for Kerala farmers.
-        
+        You are Krishi Sakhi, an agricultural assistant for Indian farmers.
+
         Farmer's Context:
         - Crop: {farmer_context.get('crop', 'Not specified')}
         - District: {farmer_context.get('district', 'Not specified')}
         - Soil Type: {farmer_context.get('landType', 'Not specified')}
         - Weather: {farmer_context.get('weather', 'Not specified')}
-        
+
         Question: {user_question}
-        
-        CRITICAL FORMATTING REQUIREMENTS:
-        - Respond ONLY in bullet points using • symbol
-        - Each bullet point must start with • followed by a space
-        - Use relevant emojis at the beginning of each bullet point
-        - Maximum 5-6 bullet points total
-        - Each bullet should be 1-2 lines maximum
-        - No paragraphs, no long explanations
-        - No introduction sentences, just direct bullet points
-        - End with one encouraging bullet point with 😊 or 🌱 emoji
-        
-        Example format:
-        • 🌱 [First point here]
-        • 💧 [Second point here]
-        • 🌾 [Third point here]
-        • 😊 [Encouraging note]
-        
-        Now provide the response:
+
+        {language_instruction}
+
+        FORMATTING:
+        - Use bullet points with • symbol
+        - Each point should be concise (1-2 lines)
+        - Use relevant emojis
+        - Maximum 5-6 points
+        - End with encouragement
+
+        Response:
         """
-        print(prompt)
         
-        # Generate response
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.7,
-                max_output_tokens=300  # Limit length for brevity
+        print(f"📝 Prompt sent to Gemini: {prompt[:200]}...")
+        
+        # Generate response with timeout
+        try:
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.7,
+                    max_output_tokens=500,
+                    top_p=0.8
+                )
             )
-        )
+            
+            print("✅ Gemini response received")
+            answer_text = response.text.strip()
+            print(f"📄 Response text: {answer_text[:100]}...")
+            
+        except Exception as api_error:
+            print(f"❌ Gemini API error: {api_error}")
+            # Fallback response
+            if current_language == "ml":
+                answer_text = "• 🌱 ക്ഷമിക്കണം, താൽക്കാലിക സമസ്യയുണ്ട്\n• 🔄 കുറച്ച് നിമിഷങ്ങൾക്ക് ശേഷം വീണ്ടും ശ്രമിക്കുക\n• 📞 അത്യാവശ്യത്തിന് കൃഷി ഭവനത്തിൽ ബന്ധപ്പെടുക\n• 😊 ദയവായി വീണ്ടും ശ്രമിക്കുക!"
+            elif current_language == "ta":
+                answer_text = "• 🌱 மன்னிக்கவும், தற்காலிக பிரச்சனை\n• 🔄 சில நிமிடங்களில் மீண்டும் முயற்சிக்கவும்\n• 📞 அவசரத்திற்கு விவசாய அலுவலகத்தை தொடர்பு கொள்ளவும்\n• 😊 தயவு செய்து மீண்டும் முயற்சிக்கவும்!"
+            else:
+                answer_text = "• 🌱 Sorry, temporary issue\n• 🔄 Please try again in a few minutes\n• 📞 Contact Krishi Bhavan for urgent help\n• 😊 Please try again!"
         
-        # ENSURE BULLET POINT FORMAT - FALLBACK IF GEMINI DOESN'T FOLLOW
-        answer_text = response.text.strip()
-        
-        # If response doesn't contain bullet points, convert it
+        # Format response if needed
         if not any(char in answer_text for char in ['•', '-', '*']):
-            # Convert to bullet points
+            print("🔧 Formatting response to bullet points...")
             sentences = [s.strip() for s in answer_text.split('.') if s.strip()]
             bullet_points = []
             emojis = ['🌱', '💧', '🌾', '🌞', '🐛', '💪', '📝', '😊']
             
-            for i, sentence in enumerate(sentences[:6]):  # Max 6 points
-                if sentence:
+            for i, sentence in enumerate(sentences[:6]):
+                if sentence and len(sentence) > 5:  # Avoid very short sentences
                     emoji = emojis[i % len(emojis)]
-                    # Remove any existing numbering or bullets
                     clean_sentence = sentence.lstrip('123456789.-* ').strip()
-                    if clean_sentence and not clean_sentence.endswith('.'):
-                        clean_sentence += '.'
-                    bullet_points.append(f"• {emoji} {clean_sentence}")
+                    if clean_sentence:
+                        bullet_points.append(f"• {emoji} {clean_sentence}")
             
-            # Add encouraging note if not present
-            if bullet_points and '😊' not in answer_text and '🌱' not in answer_text[-10:]:
-                bullet_points.append("• 😊 Stay positive and keep observing your crops!")
-            
-            answer_text = '\n'.join(bullet_points)
+            if bullet_points:
+                if current_language == "ml" and not any('😊' in point or '🌱' in point for point in bullet_points[-2:]):
+                    bullet_points.append("• 😊 നന്ദി, വീണ്ടും ചോദിക്കുക!")
+                elif current_language == "ta" and not any('😊' in point or '🌱' in point for point in bullet_points[-2:]):
+                    bullet_points.append("• 😊 நன்றி, மீண்டும் கேளுங்கள்!")
+                elif not any('😊' in point or '🌱' in point for point in bullet_points[-2:]):
+                    bullet_points.append("• 😊 Thank you, ask again!")
+                
+                answer_text = '\n'.join(bullet_points)
         
+        print(f"✅ Final response: {answer_text[:100]}...")
         return jsonify({"answer": answer_text})
         
     except Exception as e:
-        print(f"Gemini AI Error: {e}")
-        error_response = "• ⚠️ AI service is temporarily unavailable. Please try again later.\n• 🌱 In the meantime, consult your local Krishi Bhavan for assistance!"
+        print(f"❌ Critical error in ask_gemini: {e}")
+        current_language = language_manager.get_current_language()
+        if current_language == "ml":
+            error_response = "• ⚠️ സിസ്റ്റം താൽക്കാലികമായി പ്രവർത്തിക്കുന്നില്ല\n• 🔄 പേജ് refresh ചെയ്ത് വീണ്ടും ശ്രമിക്കുക\n• 🌱 ക്ഷമിക്കണം, അസൗകര്യത്തിന്"
+        elif current_language == "ta":
+            error_response = "• ⚠️ கணினி தற்காலிகமாக செயல்படவில்லை\n• 🔄 பக்கத்தைப் புதுப்பித்து மீண்டும் முயற்சிக்கவும்\n• 🌱 மன்னிக்கவும், சிரமத்திற்கு"
+        else:
+            error_response = "• ⚠️ System temporarily down\n• 🔄 Refresh page and try again\n• 🌱 Sorry for the inconvenience"
+        
         return jsonify({"answer": error_response})
 
+@app.route("/test_gemini")
+def test_gemini():
+    """Test route to check if Gemini AI is working"""
+    try:
+        if not GEMINI_API_KEY:
+            return jsonify({"status": "error", "message": "API key missing"})
+        
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content("Say 'Hello' in one word.")
+        
+        return jsonify({
+            "status": "success", 
+            "message": "Gemini AI is working",
+            "response": response.text
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    print("🚀 Starting Flask application...")
+    print(f"🔑 API Key present: {bool(GEMINI_API_KEY)}")
+    app.run(debug=True, host='0.0.0.0', port=5000)

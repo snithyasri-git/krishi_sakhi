@@ -1,3 +1,4 @@
+from language_support import language_manager
 # Agricultural knowledge base - Enhanced for Kerala crops
 CROP_ADVICE_KNOWLEDGE = {
     "paddy": {
@@ -104,13 +105,15 @@ def get_seasonal_advice():
     month = datetime.datetime.now().month
     
     if 1 <= month <= 3:
-        return KERALA_SEASONS["1-3"]
+        season_text = "Dry season - irrigation may be needed"
     elif 4 <= month <= 6:
-        return KERALA_SEASONS["4-6"]
+        season_text = "Pre-monsoon hot period - watch for heat stress"
     elif 7 <= month <= 9:
-        return KERALA_SEASONS["7-9"]
+        season_text = "Southwest monsoon - ensure drainage"
     else:
-        return KERALA_SEASONS["10-12"]
+        season_text = "Northeast monsoon - harvest planning"
+    
+    return language_manager.translate_text(season_text)
 
 def get_advice(crop, weather, land_type, district):
     """Generate contextual agricultural advice based on crop, weather, and soil conditions"""
@@ -122,7 +125,7 @@ def get_advice(crop, weather, land_type, district):
     
     advice_parts = []
     
-    # Add seasonal advice
+    # Add seasonal advice (already translated in get_seasonal_advice)
     advice_parts.append(get_seasonal_advice())
     
     # Temperature-based advice
@@ -130,43 +133,56 @@ def get_advice(crop, weather, land_type, district):
         ideal_min, ideal_max = CROP_ADVICE_KNOWLEDGE[crop]["ideal_temp"]
         
         if temp > ideal_max + 5:
-            advice_parts.append(CROP_ADVICE_KNOWLEDGE[crop]["advice"]["high_temp"])
+            advice_text = CROP_ADVICE_KNOWLEDGE[crop]["advice"]["high_temp"]
         elif temp < ideal_min - 5:
-            advice_parts.append(CROP_ADVICE_KNOWLEDGE[crop]["advice"]["low_temp"])
+            advice_text = CROP_ADVICE_KNOWLEDGE[crop]["advice"]["low_temp"]
         else:
-            advice_parts.append(CROP_ADVICE_KNOWLEDGE[crop]["advice"]["normal"])
+            advice_text = CROP_ADVICE_KNOWLEDGE[crop]["advice"]["normal"]
+        
+        advice_parts.append(language_manager.translate_text(advice_text))
     else:
         # Generic temperature advice for unknown crops
         if temp > 35:
-            advice_parts.append("High temperature detected. Ensure adequate irrigation and consider shading for sensitive plants.")
+            advice_text = "High temperature detected. Ensure adequate irrigation and consider shading for sensitive plants."
         elif temp < 20:
-            advice_parts.append("Low temperature. Protect sensitive plants from cold stress.")
+            advice_text = "Low temperature. Protect sensitive plants from cold stress."
+        else:
+            advice_text = "Temperature conditions are favorable for most crops."
+        
+        advice_parts.append(language_manager.translate_text(advice_text))
     
     # Rainfall probability advice
     if rain_prob > 70:
         if crop in CROP_ADVICE_KNOWLEDGE:
-            advice_parts.append(CROP_ADVICE_KNOWLEDGE[crop]["advice"]["high_rain"])
+            advice_text = CROP_ADVICE_KNOWLEDGE[crop]["advice"]["high_rain"]
         else:
-            advice_parts.append("High probability of rain. Ensure proper drainage in your fields.")
+            advice_text = "High probability of rain. Ensure proper drainage in your fields."
+        advice_parts.append(language_manager.translate_text(advice_text))
     elif rain_prob < 20:
         if crop in CROP_ADVICE_KNOWLEDGE:
-            advice_parts.append(CROP_ADVICE_KNOWLEDGE[crop]["advice"]["low_rain"])
+            advice_text = CROP_ADVICE_KNOWLEDGE[crop]["advice"]["low_rain"]
         else:
-            advice_parts.append("Low probability of rain. Consider irrigation if soil is dry.")
+            advice_text = "Low probability of rain. Consider irrigation if soil is dry."
+        advice_parts.append(language_manager.translate_text(advice_text))
     
     # Humidity-based advice
     if humidity > 85:
-        advice_parts.append("High humidity conditions. Monitor for fungal diseases and improve air circulation where possible.")
+        advice_text = "High humidity conditions. Monitor for fungal diseases and improve air circulation where possible."
+        advice_parts.append(language_manager.translate_text(advice_text))
     elif humidity < 50:
-        advice_parts.append("Low humidity. Ensure adequate soil moisture and consider mulching to reduce evaporation.")
+        advice_text = "Low humidity. Ensure adequate soil moisture and consider mulching to reduce evaporation."
+        advice_parts.append(language_manager.translate_text(advice_text))
     
     # Weather condition-based advice
     if "rain" in condition:
-        advice_parts.append("Rainy conditions expected. Plan fieldwork accordingly and ensure proper drainage.")
+        advice_text = "Rainy conditions expected. Plan fieldwork accordingly and ensure proper drainage."
+        advice_parts.append(language_manager.translate_text(advice_text))
     elif "sunny" in condition or "clear" in condition:
-        advice_parts.append("Sunny conditions are good for growth but monitor soil moisture levels regularly.")
+        advice_text = "Sunny conditions are good for growth but monitor soil moisture levels regularly."
+        advice_parts.append(language_manager.translate_text(advice_text))
     elif "cloud" in condition:
-        advice_parts.append("Cloudy conditions may reduce evaporation but watch for fungal diseases in high humidity.")
+        advice_text = "Cloudy conditions may reduce evaporation but watch for fungal diseases in high humidity."
+        advice_parts.append(language_manager.translate_text(advice_text))
     
     # Land type-based advice
     land_advice = {
@@ -178,7 +194,8 @@ def get_advice(crop, weather, land_type, district):
     }
     
     if land_type.lower() in land_advice:
-        advice_parts.append(land_advice[land_type.lower()])
+        advice_text = land_advice[land_type.lower()]
+        advice_parts.append(language_manager.translate_text(advice_text))
     
     # District-specific considerations
     district_advice = {
@@ -191,18 +208,23 @@ def get_advice(crop, weather, land_type, district):
     }
     
     if district.lower() in district_advice:
-        advice_parts.append(district_advice[district.lower()])
+        advice_text = district_advice[district.lower()]
     else:
-        advice_parts.append(f"Consider local {district} conditions and consult with agricultural officers for specific advice.")
+        advice_text = f"Consider local {district} conditions and consult with agricultural officers for specific advice."
     
-    # General best practices
-    advice_parts.append("Regularly monitor your crops for signs of pests, diseases, or nutrient deficiencies.")
-    advice_parts.append("Maintain soil health through organic matter addition and appropriate crop rotation.")
-    advice_parts.append("Keep records of weather patterns and crop performance to improve future planning.")
+    advice_parts.append(language_manager.translate_text(advice_text))
+    
+    # General best practices (already handled by translation)
+    general_advice = [
+        "Regularly monitor your crops for signs of pests, diseases, or nutrient deficiencies.",
+        "Maintain soil health through organic matter addition and appropriate crop rotation.",
+        "Keep records of weather patterns and crop performance to improve future planning."
+    ]
+    
+    for advice in general_advice:
+        advice_parts.append(language_manager.translate_text(advice))
     
     return " ".join(advice_parts)
-
-
 
 # Simple function to simulate what the app expects
 def get_advice_simple(crop, weather, land_type, district):

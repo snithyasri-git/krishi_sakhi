@@ -1,6 +1,7 @@
 import requests
 import random
 from datetime import datetime
+from language_support import language_manager
 
 # Kerala district coordinates mapping
 KERALA_DISTRICTS_COORDINATES = {
@@ -61,11 +62,15 @@ def get_weather(city):
     except (requests.RequestException, KeyError, ValueError):
         return get_fallback_weather(city)
 
+# Add this import at the top
+from language_support import language_manager
+
+# Modify the map_weather_code function to use translation
 def map_weather_code(code):
     """Map WMO weather code to human-readable description"""
     weather_codes = {
         0: "Clear Sky",
-        1: "Mainly Clear",
+        1: "Mainly Clear", 
         2: "Partly Cloudy",
         3: "Overcast",
         45: "Fog",
@@ -93,7 +98,12 @@ def map_weather_code(code):
         96: "Thunderstorm with Slight Hail",
         99: "Thunderstorm with Heavy Hail"
     }
-    return weather_codes.get(code, "Unknown")
+    
+    english_condition = weather_codes.get(code, "Unknown")
+    # Translate based on current language
+    return language_manager.translate_text(english_condition)
+
+# No changes needed to other functions - they'll work as before
 
 def get_fallback_weather(city):
     """Fallback weather data in case API fails"""

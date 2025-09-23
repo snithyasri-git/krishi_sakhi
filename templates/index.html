@@ -1,10 +1,9 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>💡 ＴＥＣＨＢＬＯＯＭ 🌱 </title>
+  <title>💡 ＴＥＣＨＢＬＯＯＭ 🌱</title>
   <style>
     :root {
       --accent: #2b8a3e;
@@ -27,35 +26,70 @@
       padding: 24px;
     }
 
+    /* Splash screen */
+    .splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+    .splash.hidden { opacity: 0; visibility: hidden; }
+    .splash img { width: 200px; animation: fadeIn 2s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
     .card {
       background: var(--card);
-      max-width: 720px;
+      max-width: 800px; /* Increased to accommodate longer text */
       width: 100%;
       border-radius: 12px;
       box-shadow: 0 8px 30px rgba(12, 20, 10, 0.3);
       padding: 28px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
     }
+    .card.show { opacity: 1; transform: translateY(0); }
 
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px
+      margin-bottom: 18px;
+      flex-wrap: wrap; /* Allow wrapping on small screens */
+      gap: 10px;
     }
 
     header h1 {
       margin: 0;
       font-size: 20px;
-      color: var(--accent)
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .lang-switch {
+      display: flex;
+      gap: 6px;
     }
 
     .lang-switch button {
-      margin-left: 8px;
       padding: 6px 10px;
       border-radius: 8px;
       border: 1px solid #dcdcdc;
       background: #fff;
-      cursor: pointer
+      cursor: pointer;
+      font-size: 13px;
+      min-width: 50px; /* Ensure consistent button size */
     }
 
     .lang-switch button.active {
@@ -67,7 +101,7 @@
     form {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px
+      gap: 14px; /* Slightly increased gap */
     }
 
     .full {
@@ -78,7 +112,8 @@
       display: block;
       font-size: 13px;
       margin-bottom: 6px;
-      color: #333
+      color: #333;
+      min-height: 16px; /* Ensure consistent height */
     }
 
     .input-group {
@@ -94,7 +129,20 @@
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #ccc;
-      font-size: 14px
+      font-size: 14px;
+      min-width: 0; /* Allow shrinking */
+    }
+
+    /* Specific styling for select elements to handle longer text */
+    select {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    select option {
+      font-size: 14px;
+      padding: 5px;
     }
 
     .mic-btn {
@@ -102,7 +150,8 @@
       border-radius: 50%;
       border: none;
       background: #eee;
-      cursor: pointer
+      cursor: pointer;
+      flex-shrink: 0; /* Prevent mic button from shrinking */
     }
 
     .mic-btn.active {
@@ -123,7 +172,8 @@
       border: 0;
       padding: 10px 16px;
       border-radius: 8px;
-      cursor: pointer
+      cursor: pointer;
+      font-size: 14px;
     }
 
     button.ghost {
@@ -131,13 +181,15 @@
       border: 1px solid #bbb;
       padding: 10px 14px;
       border-radius: 8px;
-      cursor: pointer
+      cursor: pointer;
+      font-size: 14px;
     }
 
     .note {
       font-size: 13px;
       color: #444;
-      margin-top: 8px
+      margin-top: 8px;
+      line-height: 1.4;
     }
 
     #responseBox {
@@ -149,25 +201,68 @@
       font-size: 14px
     }
 
-    @media (max-width:600px) {
+    @media (max-width:700px) {
       body {
         padding: 12px;
       }
 
+      .card {
+        padding: 20px;
+      }
+
       form {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .lang-switch {
+        align-self: flex-end;
+        margin-top: 10px;
+      }
+
+      /* Adjust font sizes for better readability on small screens */
+      select, input {
+        font-size: 16px; /* Prevent zoom on iOS */
+      }
+    }
+
+    @media (max-width:400px) {
+      .lang-switch button {
+        padding: 6px 8px;
+        font-size: 12px;
+        min-width: 45px;
+      }
+      
+      header h1 {
+        font-size: 18px;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="card" role="main">
+  <!-- Splash screen with AI logo -->
+  <div class="splash" id="splashScreen">
+    <img src="/static/images/hh.jpg" alt="AI Logo Splash" />
+  </div>
+  
+  <!-- Main card -->
+  <div class="card" role="main" id="mainCard">
     <header>
-      <h1 id="title">Agriculture Login</h1>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <img src="/static/images/hh1.jpg" alt="Logo 1" style="height: 48px;" />
+        <h1 id="title">Krishi Sakhi</h1>
+      </div>
+
       <div class="lang-switch" role="tablist" aria-label="Language switch">
         <button id="btn-en" class="active" type="button" data-lang="en">EN</button>
         <button id="btn-ml" type="button" data-lang="ml">മലയാളം</button>
+        <button id="btn-ta" type="button" data-lang="ta">தமிழ்</button>
       </div>
     </header>
 
@@ -240,38 +335,27 @@
         <div class="input-group">
           <select id="landType" name="landType" required>
             <option value="">-- Select --</option>
-            <option value="sandy">Sandy (മണൽ മണ്ണ്)</option>
-            <option value="clay">Clay (ക്ലേ മണ്ണ്)</option>
-            <option value="loamy">Loamy (ലോമി മണ്ണ്)</option>
-            <option value="alluvial">Alluvial (ഘന മണ്ണ്)</option>
-            <option value="rocky">Rocky (പാറ മണ്ണ്)</option>
           </select>
           <button type="button" class="mic-btn" data-target="landType">🎤</button>
         </div>
       </div>
 
       <div class="full">
-        <label for="crop">Crop</label>
+        <label for="crop" id="labelCrop">Crop</label>
         <div class="input-group">
           <select id="crop" name="crop" required>
             <option value="">-- Select Crop --</option>
-            <option value="paddy">Paddy</option>
-            <option value="wheat">Wheat</option>
-            <option value="banana">Banana</option>
-            <option value="coconut">Coconut</option>
           </select>
           <button type="button" class="mic-btn" data-target="crop">🎤</button>
         </div>
       </div>
-
 
       <div class="full actions">
         <button type="button" class="ghost" id="clearBtn">Clear</button>
         <button type="submit" class="primary" id="submitBtn">Login</button>
       </div>
 
-      <p class="full note" id="note">We will use this information to personalise farming tips. No data leaves your
-        browser in this demo.</p>
+      <p class="full note" id="note">We will use this information to personalise farming tips. No data leaves your browser in this demo.</p>
     </form>
 
     <!-- Response from Flask will show here -->
@@ -279,33 +363,134 @@
   </div>
 
   <script>
-    // ---- Translations ----
-    const translations = {
-      en: {
-        title: 'Krishi Sakhi', labelName: 'Farmer Name', labelPhone: 'Phone Number',
-        labelState: 'State', labelDistrict: 'District', labelVillage: 'Village',
-        labelLand: 'Type of land', submit: 'Login', clear: 'Clear',
-        note: 'We will use this information to personalise farming tips. No data leaves your browser in this demo.',
-        placeholders: { farmerName: 'e.g. D.jana', phone: 'e.g. 9876543210' },
-        summaryTitle: 'Saved details:'
+    // ----- Location & Language Data -----
+    const locationData = {
+      "Kerala": {
+        "Thiruvananthapuram": { "Thiruvananthapuram":["Andoorkonam","Attipra","Ayiroopara","Cheruvakkal"], "Neyyattinkara":["Anavoor","Athiyannur","Kunnukara"] },
+        "Ernakulam": { "Aluva":["Chengamanad","Parakkadavu"], "Muvattupuzha":["Arakuzha","Elanji"] }
       },
-      ml: {
-        title: 'കൃഷി ലോഗിൻ', labelName: 'കർഷകന്റെ പേര്', labelPhone: 'ഫോൺ നമ്പർ',
-        labelState: 'സംസ്ഥാനം', labelDistrict: 'ജില്ല', labelVillage: 'ഗ്രാമം',
-        labelLand: 'ഭൂമിയുടെ തരം', submit: 'ലോഗിൻ', clear: 'സഫാക്തം',
-        note: 'ഈ വിവരങ്ങൾ കൃഷി ഉപദേഷ്ടാക്കളെ വ്യക്തിഗതമാക്കാൻ ഉപയോഗിക്കും. ഈ ഡെമോയിൽ ഡാറ്റ് ബ്രൗസറിന് പുറത്തേക്ക് പോകാറില്ല.',
-        placeholders: { farmerName: 'ഉദാ: കെ. രാം', phone: 'ഉദാ: 9876543210' },
-        summaryTitle: 'സംരക്ഷിച്ച വിശദാംശങ്ങൾ:'
+      "Tamil Nadu": {
+        "Chennai": { "Chennai North":["Villivakkam","Anna Nagar"], "Chennai South":["Adyar","Velachery"] },
+        "Coimbatore": { "Coimbatore North":["R.S.Puram","Gandhipuram"], "Coimbatore South":["Singanallur","Podanur"] }
       }
     };
 
-    // ---- Elements ----
-    const btnEn = document.getElementById('btn-en');
-    const btnMl = document.getElementById('btn-ml');
-    const langButtons = [btnEn, btnMl];
-    const form = document.getElementById('farmForm');
-    const clearBtn = document.getElementById('clearBtn');
-    const responseBox = document.getElementById("responseBox");
+    const locationNames = {
+      en: {
+        "Kerala": "Kerala",
+        "Thiruvananthapuram":"Thiruvananthapuram","Neyyattinkara":"Neyyattinkara","Ernakulam":"Ernakulam",
+        "Aluva":"Aluva","Muvattupuzha":"Muvattupuzha","Chennai North":"Chennai North","Chennai South":"Chennai South",
+        "Coimbatore North":"Coimbatore North","Coimbatore South":"Coimbatore South",
+        // Villages English
+        "Andoorkonam":"Andoorkonam","Attipra":"Attipra","Ayiroopara":"Ayiroopara","Cheruvakkal":"Cheruvakkal",
+        "Anavoor":"Anavoor","Athiyannur":"Athiyannur","Kunnukara":"Kunnukara",
+        "Chengamanad":"Chengamanad","Parakkadavu":"Parakkadavu","Arakuzha":"Arakuzha","Elanji":"Elanji",
+        "Villivakkam":"Villivakkam","Anna Nagar":"Anna Nagar","Adyar":"Adyar","Velachery":"Velachery",
+        "R.S.Puram":"R.S.Puram","Gandhipuram":"Gandhipuram","Singanallur":"Singanallur","Podanur":"Podanur",
+        "Chavakkad": "Chavakkad", "Vatakara": "Vatakara", "Perambra": "Perambra", "Mananthavady": "Mananthavady",
+        "Munnar": "Munnar", "Aluva": "Aluva", "Kodungallur": "Kodungallur", "Perumbavoor": "Perumbavoor",
+        "Kollam": "Kollam", "Pathanamthitta": "Pathanamthitta", "Alappuzha": "Alappuzha", "Kottayam": "Kottayam",
+        "Idukki": "Idukki", "Thrissur": "Thrissur", "Palakkad": "Palakkad", "Malappuram": "Malappuram",
+        "Kozhikode": "Kozhikode", "Wayanad": "Wayanad", "Kannur": "Kannur", "Kasaragod": "Kasaragod"
+      },
+      ml: {
+        "Kerala": "കേരളം",
+        "Thiruvananthapuram":"തിരുവനന്തപുരം","Neyyattinkara":"നെയ്യാറ്റിൻകര","Ernakulam":"എറണാകുളം",
+        "Aluva":"അലുവ","Muvattupuzha":"മുവാറ്റുപുഴ","Chennai North":"ചെന്നൈ നോർത്ത്","Chennai South":"ചെന്നൈ സൌത്ത്",
+        "Coimbatore North":"കോയംബത്തൂർ നോർത്ത്","Coimbatore South":"കോയംബത്തൂർ സൌത്ത്",
+        // Villages Malayalam
+        "Andoorkonam":"ആണ്ടൂർക്കോണാം","Attipra":"അട്ടിപ്ര","Ayiroopara":"അയിരൂപാറ","Cheruvakkal":"ചെറുവക്കൽ",
+        "Anavoor":"ആനവൂർ","Athiyannur":"അതിരിയന്നൂർ","Kunnukara":"കുന്നുകര",
+        "Chengamanad":"ചെംഗമനാട്","Parakkadavu":"പരക്കടാവ്","Arakuzha":"ആറാക്കുഴ","Elanji":"ഇളഞ്ഞി",
+        "Villivakkam":"വിളിവാക്കം","Anna Nagar":"അണ്ണാ നഗർ","Adyar":"അഡ്യാർ","Velachery":"വെളച്ചേരി",
+        "R.S.Puram":"ആർ.എസ്.പുരം","Gandhipuram":"ഗാന്ധിപുരം","Singanallur":"സിംഗാനല്ലൂർ","Podanur":"പോഡനൂർ",
+        "Chavakkad": "ചാവക്കാട്", "Vatakara": "വടകര", "Perambra": "പേരാമ്പ്ര", "Mananthavady": "മണന്തവാടി",
+        "Munnar": "മൂന്നാർ", "Aluva": "അലുവ", "Kodungallur": "കൊടുങ്ങല്ലൂർ", "Perumbavoor": "പെരുമ്പാവൂർ",
+        "Kollam": "കൊല്ലം", "Pathanamthitta": "പത്തനംതിട്ട", "Alappuzha": "ആലപ്പുഴ", "Kottayam": "കോട്ടയം",
+        "Idukki": "ഇടുക്കി", "Thrissur": "തൃശ്ശൂർ", "Palakkad": "പാലക്കാട്", "Malappuram": "മലപ്പുറം",
+        "Kozhikode": "കോഴിക്കോട്", "Wayanad": "വയനാട്", "Kannur": "കണ്ണൂർ", "Kasaragod": "കാസർഗോഡ്"
+      },
+      ta: {
+        "Kerala": "கேரளா",
+        "Thiruvananthapuram":"திருவனந்தபுரம்","Neyyattinkara":"நெய்யாட்டிங்கரா","Ernakulam":"எர்ணாகுளம்",
+        "Aluva":"அலுவா","Muvattupuzha":"முவட்டுப்புழா","Chennai North":"சென்னை வடக்கு","Chennai South":"சென்னை தெற்கு",
+        "Coimbatore North":"கோயம்புத்தூர் வடக்கு","Coimbatore South":"கோயம்புத்தூர் தெற்கு",
+        // Villages Tamil
+        "Andoorkonam":"அண்டூர்கோணம்","Attipra":"அட்டிப்ரா","Ayiroopara":"அயிரூபாரா","Cheruvakkal":"செருவக்கல்",
+        "Anavoor":"அனவூர்","Athiyannur":"அதியன்னூர்","Kunnukara":"குன்னுகாரா",
+        "Chengamanad":"செங்கமணாட்","Parakkadavu":"பரக்கடவு","Arakuzha":"அராகுழா","Elanji":"எலஞ்சி",
+        "Villivakkam":"வில்லிவாக்கம்","Anna Nagar":"அண்ணா நகர்","Adyar":"அடையார்","Velachery":"வெளச்சேரி",
+        "R.S.Puram":"ஆர்.எஸ்.புரம்","Gandhipuram":"காந்திபுரம்","Singanallur":"சிங்கானல்லூர்","Podanur":"போடனூர்",
+        "Chavakkad": "சாவக்காடு", "Vatakara": "வடகரை", "Perambra": "பேராம்பறை", "Mananthavady": "மணந்தவாடி",
+        "Munnar": "மூணார்", "Aluva": "அலுவா", "Kodungallur": "கொடுங்கல்லூர்", "Perumbavoor": "பெரும்பாவூர்",
+        "Kollam": "கொல்லம்", "Pathanamthitta": "பத்தனந்திட்டை", "Alappuzha": "ஆலப்புழை", "Kottayam": "கோட்டயம்",
+        "Idukki": "இடுக்கி", "Thrissur": "திருச்சூர்", "Palakkad": "பாலக்காடு", "Malappuram": "மலப்புறம்",
+        "Kozhikode": "கோழிக்கோடு", "Wayanad": "வயநாடு", "Kannur": "கண்ணூர்", "Kasaragod": "காசர்கோடு"
+      }
+    };
+
+    const translations = {
+      en: { 
+        title: 'Krishi Sakhi', 
+        labelName: 'Farmer Name', 
+        labelPhone: 'Phone Number',
+        labelState: 'State', 
+        labelDistrict: 'District', 
+        labelVillage: 'Village',
+        labelLand: 'Type of land', 
+        labelCrop: 'Crop',
+        submit: 'Login', 
+        clear: 'Clear',
+        note: 'We will use this information to personalise farming tips. No data leaves your browser in this demo.',
+        placeholders: { farmerName: 'e.g. K. Ram', phone: 'e.g. 9876543210' },
+        selectDistrict: '-- Select District --',
+        selectVillage: '-- Select Village --',
+        selectLandType: '-- Select --',
+        selectCrop: '-- Select Crop --',
+        landTypes: ["Sandy","Clay","Loamy","Alluvial","Rocky"],
+        crops: ["Paddy", "Wheat", "Banana", "Coconut"]
+      },
+      ml: { 
+        title: 'കൃഷി സഖി', 
+        labelName: 'കർഷകന്റെ പേര്', 
+        labelPhone: 'ഫോൺ നമ്പർ',
+        labelState: 'സംസ്ഥാനം', 
+        labelDistrict: 'ജില്ല', 
+        labelVillage: 'ഗ്രാമം',
+        labelLand: 'ഭൂമിയുടെ തരം', 
+        labelCrop: 'വിള',
+        submit: 'ലോഗിൻ', 
+        clear: 'സഫാക്തം',
+        note: 'ഈ വിവരങ്ങൾ കൃഷി ഉപദേഷ്ടാക്കളെ വ്യക്തിഗതമാക്കാൻ ഉപയോഗിക്കും. ഡാറ്റ ബ്രൗസറിന് പുറത്തേക്ക് പോകുന്നില്ല.',
+        placeholders: { farmerName: 'ഉദാ: കെ. രാം', phone: 'ഉദാ: 9876543210' },
+        selectDistrict: '-- ജില്ല തിരഞ്ഞെടുക്കുക --',
+        selectVillage: '-- ഗ്രാമം തിരഞ്ഞെടുക്കുക --',
+        selectLandType: '-- തിരഞ്ഞെടുക്കുക --',
+        selectCrop: '-- വിള തിരഞ്ഞെടുക്കുക --',
+        landTypes: ["മണൽ","കിളർ","ലോമി","അലൂവിയൽ","പാറ"],
+        crops: ["നെല്ല്", "ഗോതമ്പ്", "വാഴ", "തെങ്ങ്"]
+      },
+      ta: { 
+        title: 'கிருஷி சகி', 
+        labelName: 'விவசாயியின் பெயர்', 
+        labelPhone: 'தொலைபேசி எண்',
+        labelState: 'மாநிலம்', 
+        labelDistrict: 'மாவட்டம்', 
+        labelVillage: 'கிராமம்',
+        labelLand: 'மண்ணின் வகை', 
+        labelCrop: 'பயிர்',
+        submit: 'பதிவு', 
+        clear: 'அழி',
+        note: 'இந்த தகவல்கள் விவசாய குறிப்புகளை தனிப்பயனாக்க பயன்படுத்தப்படும். எந்த தரவும் உலாவியை விட்டு வெளியே போகவில்லை.',
+        placeholders: { farmerName: 'உதா: கே. ராம்', phone: 'உதா: 9876543210' },
+        selectDistrict: '-- மாவட்டத்தைத் தேர்ந்தெடுக்கவும் --',
+        selectVillage: '-- கிராமத்தைத் தேர்ந்தெடுக்கவும் --',
+        selectLandType: '-- தேர்ந்தெடுக்கவும் --',
+        selectCrop: '-- பயிரைத் தேர்ந்தெடுக்கவும் --',
+        landTypes: ["மணல்","களிமண்","லோமி","அலூவியல்","பாறை"],
+        crops: ["நெல்", "கோதுமை", "வாழை", "தேங்காய்"]
+      }
+    };
 
     const elems = {
       title: document.getElementById('title'),
@@ -315,77 +500,224 @@
       labelDistrict: document.getElementById('labelDistrict'),
       labelVillage: document.getElementById('labelVillage'),
       labelLand: document.getElementById('labelLand'),
+      labelCrop: document.getElementById('labelCrop'),
       submitBtn: document.getElementById('submitBtn'),
       clearBtn: document.getElementById('clearBtn'),
       note: document.getElementById('note'),
       farmerName: document.getElementById('farmerName'),
       phone: document.getElementById('phone'),
+      state: document.getElementById('state'),
       district: document.getElementById('district'),
       village: document.getElementById('village'),
-      landType: document.getElementById('landType')
+      landType: document.getElementById('landType'),
+      crop: document.getElementById('crop')
     };
 
-    function applyLang(lang) {
-      const t = translations[lang] || translations.en;
-      elems.title.innerText = t.title;
-      elems.labelName.innerText = t.labelName;
-      elems.labelPhone.innerText = t.labelPhone;
-      elems.labelState.innerText = t.labelState;
-      elems.labelDistrict.innerText = t.labelDistrict;
-      elems.labelVillage.innerText = t.labelVillage;
-      elems.labelLand.innerText = t.labelLand;
-      elems.submitBtn.innerText = t.submit;
-      elems.clearBtn.innerText = t.clear;
-      elems.note.innerText = t.note;
-      elems.farmerName.placeholder = t.placeholders.farmerName;
-      elems.phone.placeholder = t.placeholders.phone;
-      langButtons.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
-      localStorage.setItem('agri_lang', lang);
+    // Function to populate districts
+    function populateDistricts(lang) {
+      const districtSelect = elems.district;
+      const currentValue = districtSelect.value;
+      
+      // Clear existing options except the first one
+      districtSelect.innerHTML = `<option value="">${translations[lang].selectDistrict}</option>`;
+      
+      // Add districts for Kerala
+      const districts = [
+        "Thiruvananthapuram", "Kollam", "Pathanamthitta", "Alappuzha", 
+        "Kottayam", "Idukki", "Ernakulam", "Thrissur", 
+        "Palakkad", "Malappuram", "Kozhikode", "Wayanad", 
+        "Kannur", "Kasaragod"
+      ];
+      
+      districts.forEach(district => {
+        const option = document.createElement("option");
+        option.value = district;
+        option.textContent = locationNames[lang][district] || district;
+        districtSelect.appendChild(option);
+      });
+      
+      // Restore previously selected value if it exists
+      if (currentValue && districts.includes(currentValue)) {
+        districtSelect.value = currentValue;
+      }
     }
 
-    const savedLang = localStorage.getItem('agri_lang') || 'en';
+    // Function to populate villages
+    function populateVillages(lang) {
+      const villageSelect = elems.village;
+      const currentValue = villageSelect.value;
+      const selectedDistrict = elems.district.value;
+      
+      // Clear existing options except the first one
+      villageSelect.innerHTML = `<option value="">${translations[lang].selectVillage}</option>`;
+      
+      // Add villages based on selected district
+      const villages = [
+        "Chavakkad", "Vatakara", "Perambra", "Mananthavady", 
+        "Munnar", "Aluva", "Kodungallur", "Perumbavoor"
+      ];
+      
+      villages.forEach(village => {
+        const option = document.createElement("option");
+        option.value = village;
+        option.textContent = locationNames[lang][village] || village;
+        villageSelect.appendChild(option);
+      });
+      
+      // Restore previously selected value if it exists
+      if (currentValue && villages.includes(currentValue)) {
+        villageSelect.value = currentValue;
+      }
+    }
+
+    function populateLandTypes(lang){
+      elems.landType.innerHTML=`<option value="">${translations[lang].selectLandType}</option>`;
+      translations[lang].landTypes.forEach((l,i)=>{
+        const opt=document.createElement("option");
+        opt.value=["sandy","clay","loamy","alluvial","rocky"][i];
+        opt.textContent=l;
+        elems.landType.appendChild(opt);
+      });
+    }
+
+    function populateCrops(lang){
+      elems.crop.innerHTML=`<option value="">${translations[lang].selectCrop}</option>`;
+      translations[lang].crops.forEach((c,i)=>{
+        const opt=document.createElement("option");
+        opt.value=["paddy","wheat","banana","coconut"][i];
+        opt.textContent=c;
+        elems.crop.appendChild(opt);
+      });
+    }
+
+    function applyLang(lang){
+      const t=translations[lang];
+      elems.title.innerText=t.title;
+      elems.labelName.innerText=t.labelName;
+      elems.labelPhone.innerText=t.labelPhone;
+      elems.labelState.innerText=t.labelState;
+      elems.labelDistrict.innerText=t.labelDistrict;
+      elems.labelVillage.innerText=t.labelVillage;
+      elems.labelLand.innerText=t.labelLand;
+      elems.labelCrop.innerText=t.labelCrop;
+      elems.submitBtn.innerText=t.submit;
+      elems.clearBtn.innerText=t.clear;
+      elems.note.innerText=t.note;
+      elems.farmerName.placeholder=t.placeholders.farmerName;
+      elems.phone.placeholder=t.placeholders.phone;
+      
+      // Update state name
+      elems.state.value = locationNames[lang]["Kerala"] || "Kerala";
+      
+      // Update all dropdowns
+      populateDistricts(lang);
+      populateVillages(lang);
+      populateLandTypes(lang);
+      populateCrops(lang);
+      
+      localStorage.setItem('agri_lang',lang);
+      document.querySelectorAll('.lang-switch button').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+    }
+
+    // Language switching
+    const savedLang = localStorage.getItem('agri_lang')||'en';
     applyLang(savedLang);
-    btnEn.addEventListener('click', () => applyLang('en'));
-    btnMl.addEventListener('click', () => applyLang('ml'));
-    clearBtn.addEventListener('click', () => { form.reset(); });
+
+    document.getElementById('btn-en').onclick=()=>applyLang('en');
+    document.getElementById('btn-ml').onclick=()=>applyLang('ml');
+    document.getElementById('btn-ta').onclick=()=>applyLang('ta');
+
+    // Update villages when district changes
+    elems.district.addEventListener('change', () => {
+      const lang = localStorage.getItem('agri_lang') || 'en';
+      populateVillages(lang);
+    });
+
+    // ----- MIC BUTTON FUNCTIONALITY -----
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(SpeechRecognition){
+      const recognizer = new SpeechRecognition();
+      recognizer.interimResults = false;
+
+      document.querySelectorAll('.mic-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const targetId = btn.dataset.target;
+          const inputElem = document.getElementById(targetId);
+          btn.classList.add('active');
+
+          // Update language dynamically
+          const langCode = localStorage.getItem('agri_lang') || 'en';
+          recognizer.lang = langCode==='ml' ? 'ml-IN' : langCode==='ta' ? 'ta-IN' : 'en-US';
+
+          recognizer.abort(); // stop any previous session
+          recognizer.start();
+
+          recognizer.onresult = (event)=>{
+            const transcript = event.results[0][0].transcript;
+            inputElem.value = transcript;
+          };
+
+          recognizer.onend = ()=>{ btn.classList.remove('active'); };
+        });
+      });
+    } else {
+      console.warn("Speech Recognition not supported in this browser.");
+    }
+
+    // Clear form
+    elems.clearBtn.addEventListener('click', ()=>{
+      document.getElementById('farmForm').reset();
+      const lang=localStorage.getItem('agri_lang')||'en';
+      populateDistricts(lang);
+      populateVillages(lang);
+      populateLandTypes(lang);
+      populateCrops(lang);
+    });
+
+    // Splash screen hide
+    window.addEventListener('load', ()=>{
+      const splash = document.getElementById('splashScreen');
+      const card = document.getElementById('mainCard');
+      setTimeout(()=>{
+        splash.classList.add('hidden');
+        card.classList.add('show');
+      },1500);
+    });
 
     // ---- Submit to Flask ----
-    
-    form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const data = {
-    farmerName: elems.farmerName.value.trim(),
-    phone: elems.phone.value.trim(),
-    district: elems.district.value,
-    village: elems.village.value,
-    landType: elems.landType.value,
-    crop: document.getElementById("crop").value
-  };
+    document.getElementById('farmForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const data = {
+        farmerName: elems.farmerName.value.trim(),
+        phone: elems.phone.value.trim(),
+        district: elems.district.value,
+        village: elems.village.value,
+        landType: elems.landType.value,
+        crop: elems.crop.value
+      };
 
-  if(!data.farmerName || !data.phone || !data.district || !data.village || !data.landType || !data.crop){
-    alert("Please fill all fields.");
-    return;
-  }
+      if(!data.farmerName || !data.phone || !data.district || !data.village || !data.landType || !data.crop){
+        alert("Please fill all fields.");
+        return;
+      }
 
-  try {
-    const response = await fetch("/save_profile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      try {
+        const response = await fetch("/save_profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+
+        // Redirect to result page with query params
+        const params = new URLSearchParams(result).toString();
+        window.location.href = `/result?${params}`;
+
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong while saving profile.");
+      }
     });
-    const result = await response.json();
-
-    // Redirect to result page with query params
-    const params = new URLSearchParams(result).toString();
-    window.location.href = `/result?${params}`;
-
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Something went wrong while saving profile.");
-  }
-});
-
   </script>
 </body>
-
 </html>

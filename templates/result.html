@@ -107,6 +107,32 @@
       color: #2b8a3e;
     }
 
+    /* Language Selector Styles */
+    .language-selector {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+    }
+    .lang-btn {
+      padding: 8px 16px;
+      background: #f1f8f4;
+      border: 1px solid #2b8a3e;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    .lang-btn:hover {
+      background: #e8f5e8;
+    }
+    .lang-btn.active {
+      background: #2b8a3e;
+      color: white;
+    }
+
     /* Floating AI Icon Styles */
     .ai-chat-icon {
       position: fixed;
@@ -349,36 +375,47 @@
         bottom: 20px;
         right: 20px;
       }
+      .language-selector {
+        top: 10px;
+        right: 10px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Language Selector -->
+  <div class="language-selector">
+    <button class="lang-btn active" data-lang="en">English</button>
+    <button class="lang-btn" data-lang="ml">മലയാളം</button>
+    <button class="lang-btn" data-lang="ta">தமிழ்</button>
+  </div>
+
   <div class="card">
-    <h1>🌱 Farmer Advisory Report</h1>
+    <h1 data-en="🌱 Farmer Advisory Report" data-ml="🌱 കർഷക ഉപദേശ റിപ്പോർട്ട്" data-ta="🌱 விவசாயி ஆலோசனை அறிக்கை">🌱 Farmer Advisory Report</h1>
 
     <div class="section">
-      <h3>👨‍🌾 Farmer Information</h3>
+      <h3 data-en="👨‍🌾 Farmer Information" data-ml="👨‍🌾 കർഷക വിവരങ്ങൾ" data-ta="👨‍🌾 விவசாயி தகவல்">👨‍🌾 Farmer Information</h3>
       <div class="farmer-details" id="farmerInfo"></div>
     </div>
 
     <div class="section">
-      <h3>🌦 Current Weather Conditions</h3>
+      <h3 data-en="🌦 Current Weather Conditions" data-ml="🌦 നിലവിലെ കാലാവസ്ഥ" data-ta="🌦 தற்போதைய வானிலை நிலைமைகள்">🌦 Current Weather Conditions</h3>
       <div class="weather-cards">
-        <div class="card-small">🌡 Temperature <b id="temp"></b></div>
-        <div class="card-small">☁ Condition <b id="condition"></b></div>
-        <div class="card-small">💧 Humidity <b id="humidity"></b></div>
-        <div class="card-small">🌧 Rain Chance <b id="rain"></b></div>
-        <div class="card-small">💨 Wind Speed <b id="wind"></b></div>
+        <div class="card-small" data-en="🌡 Temperature" data-ml="🌡 താപനില" data-ta="🌡 வெப்பநிலை">🌡 Temperature <b id="temp"></b></div>
+        <div class="card-small" data-en="☁ Condition" data-ml="☁ അവസ്ഥ" data-ta="☁ நிலை">☁ Condition <b id="condition"></b></div>
+        <div class="card-small" data-en="💧 Humidity" data-ml="💧 ആർദ്രത" data-ta="💧 ஈரப்பதம்">💧 Humidity <b id="humidity"></b></div>
+        <div class="card-small" data-en="🌧 Rain Chance" data-ml="🌧 മഴ സാധ്യത" data-ta="🌧 மழை வாய்ப்பு">🌧 Rain Chance <b id="rain"></b></div>
+        <div class="card-small" data-en="💨 Wind Speed" data-ml="💨 കാറ്റിൻ്റെ വേഗത" data-ta="💨 காற்றின் வேகம்">💨 Wind Speed <b id="wind"></b></div>
       </div>
     </div>
 
     <div class="section">
-      <h3>💡 Agricultural Advice</h3>
+      <h3 data-en="💡 Agricultural Advice" data-ml="💡 കൃഷി ഉപദേശം" data-ta="💡 விவசாய ஆலோசனை">💡 Agricultural Advice</h3>
       <div class="advice" id="adviceBox"></div>
     </div>
 
     <div style="text-align: center;">
-      <a href="/" class="btn">⬅ Back to Main Form</a>
+      <a href="/" class="btn" data-en="⬅ Back to Main Form" data-ml="⬅ പ്രധാന ഫോമിലേക്ക് മടങ്ങുക" data-ta="⬅ முதன்மை படிவத்திற்கு திரும்பு">⬅ Back to Main Form</a>
     </div>
   </div>
 
@@ -392,7 +429,7 @@
   <!-- Chatbot Container -->
   <div class="chatbot-container" id="chatbotContainer">
     <div class="chatbot-header">
-      <span>🌱 Krishi Sakhi AI</span>
+      <span data-en="🌱 Krishi Sakhi AI" data-ml="🌱 കൃഷി സഖി AI" data-ta="🌱 கிரிஷி சகி AI">🌱 Krishi Sakhi AI</span>
       <button class="close-chat" id="closeChat">×</button>
     </div>
     
@@ -401,44 +438,246 @@
     </div>
     
     <div class="chatbot-input">
-      <input type="text" id="chatInput" placeholder="Ask about farming..." />
-      <button id="sendButton">Send</button>
+      <input type="text" id="chatInput" placeholder="Ask about farming..." data-en="Ask about farming..." data-ml="കൃഷിയെക്കുറിച്ച് ചോദിക്കുക..." data-ta="விவசாயம் பற்றி கேளுங்கள்..." />
+      <button id="sendButton" data-en="Send" data-ml="അയയ്ക്കുക" data-ta="அனுப்பு">Send</button>
     </div>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
+    // Language translations
+    const translations = {
+      en: {
+        // Page content
+        "farmerName": "Name",
+        "phone": "Phone",
+        "district": "District",
+        "village": "Village",
+        "landType": "Soil Type",
+        "crop": "Crop",
+        "notProvided": "Not provided",
+        
+        // Weather conditions
+        "temperature": "Temperature",
+        "condition": "Condition",
+        "humidity": "Humidity",
+        "rainChance": "Rain Chance",
+        "windSpeed": "Wind Speed",
+        
+        // Chatbot
+        "chatPlaceholder": "Ask about farming...",
+        "send": "Send",
+        "chatTitle": "🌱 Krishi Sakhi AI",
+        "welcomeMessage": "Hello! I'm Krishi Sakhi AI. I can help you with {crop} cultivation in {district}. What would you like to know?",
+        "tryAsking": "💡 Try asking:",
+        
+        // Suggestions
+        "paddyFertilizer": "Best fertilizers for paddy in rainy season",
+        "paddyPests": "How to control pests in paddy fields?",
+        "paddyWater": "Optimal water management for paddy",
+        "paddyHarvest": "When to harvest paddy in Kerala?",
+        
+        "coconutFertilizer": "Coconut tree fertilizer schedule",
+        "coconutMite": "How to prevent coconut mite infestation?",
+        "coconutIntercropping": "Intercropping with coconut trees",
+        "coconutHarvest": "Coconut harvesting techniques",
+        
+        "bananaCare": "Banana plant care during monsoon",
+        "bananaVarieties": "Best banana varieties for Kerala",
+        "bananaVirus": "How to control banana bunchy top virus?",
+        "bananaSpacing": "Banana plantation spacing guide",
+        
+        "farmingPractices": "Best farming practices for current weather",
+        "soilImprovement": "Soil improvement techniques",
+        "waterConservation": "Water conservation methods",
+        "organicFarming": "Organic farming tips for Kerala"
+      },
+      ml: {
+        // Page content
+        "farmerName": "പേര്",
+        "phone": "ഫോൺ",
+        "district": "ജില്ല",
+        "village": "ഗ്രാമം",
+        "landType": "മണ്ണിന്റെ തരം",
+        "crop": "പയർ",
+        "notProvided": "നൽകിയിട്ടില്ല",
+        
+        // Weather conditions
+        "temperature": "താപനില",
+        "condition": "അവസ്ഥ",
+        "humidity": "ആർദ്രത",
+        "rainChance": "മഴ സാധ്യത",
+        "windSpeed": "കാറ്റിൻ്റെ വേഗത",
+        
+        // Chatbot
+        "chatPlaceholder": "കൃഷിയെക്കുറിച്ച് ചോദിക്കുക...",
+        "send": "അയയ്ക്കുക",
+        "chatTitle": "🌱 കൃഷി സഖി AI",
+        "welcomeMessage": "നമസ്കാരം! ഞാൻ കൃഷി സഖി AI ആണ്. {district} ൽ {crop} കൃഷിയിൽ നിങ്ങളെ സഹായിക്കാൻ എനിക്ക് കഴിയും. നിങ്ങൾക്ക് എന്താണ് അറിയാനുള്ളത്?",
+        "tryAsking": "💡 ഇത് ചോദിക്കാം:",
+        
+        // Suggestions
+        "paddyFertilizer": "വർഷാകാലത്ത് നെല്ലിന് ഏറ്റവും നല്ല വളങ്ങൾ",
+        "paddyPests": "നെല്ല് വയലുകളിൽ കീടങ്ങൾ എങ്ങനെ നിയന്ത്രിക്കാം?",
+        "paddyWater": "നെല്ലിന് ഉചിതമായ ജല മാനേജ്മെന്റ്",
+        "paddyHarvest": "കേരളത്തിൽ നെല്ല് വിളവെടുക്കേണ്ട സമയം?",
+        
+        "coconutFertilizer": "തെങ്ങിനുള്ള വളപ്രയോഗ ഷെഡ്യൂൾ",
+        "coconutMite": "തെങ്ങിൽ മൈറ്റ് ബാധ തടയുന്നത് എങ്ങനെ?",
+        "coconutIntercropping": "തെങ്ങിനൊപ്പം ഇന്റർക്രോപ്പിംഗ്",
+        "coconutHarvest": "തെങ്ങ് വിളവെടുക്കൽ രീതികൾ",
+        
+        "bananaCare": "മൺസൂണിൽ വാഴത്തൈ പരിചരണം",
+        "bananaVarieties": "കേരളത്തിന് അനുയോജ്യമായ വാഴയുടെ ഇനങ്ങൾ",
+        "bananaVirus": "വാഴയുടെ ബഞ്ചി ടോപ്പ് വൈറസ് എങ്ങനെ നിയന്ത്രിക്കാം?",
+        "bananaSpacing": "വാഴത്തോട്ടത്തിനുള്ള ഇടവേള ഗൈഡ്",
+        
+        "farmingPractices": "നിലവിലെ കാലാവസ്ഥയ്ക്ക് അനുയോജ്യമായ കൃഷി രീതികൾ",
+        "soilImprovement": "മണ്ണ് മെച്ചപ്പെടുത്തൽ ടെക്നിക്കുകൾ",
+        "waterConservation": "ജല സംരക്ഷണ രീതികൾ",
+        "organicFarming": "കേരളത്തിൽ ഓർഗാനിക് ഫാമിംഗ് ടിപ്സ്"
+      },
+      ta: {
+        // Page content
+        "farmerName": "பெயர்",
+        "phone": "தொலைபேசி",
+        "district": "மாவட்டம்",
+        "village": "கிராமம்",
+        "landType": "மண் வகை",
+        "crop": "பயிர்",
+        "notProvided": "வழங்கப்படவில்லை",
+        
+        // Weather conditions
+        "temperature": "வெப்பநிலை",
+        "condition": "நிலை",
+        "humidity": "ஈரப்பதம்",
+        "rainChance": "மழை வாய்ப்பு",
+        "windSpeed": "காற்றின் வேகம்",
+        
+        // Chatbot
+        "chatPlaceholder": "விவசாயம் பற்றி கேளுங்கள்...",
+        "send": "அனுப்பு",
+        "chatTitle": "🌱 கிரிஷி சகி AI",
+        "welcomeMessage": "வணக்கம்! நான் கிரிஷி சகி AI. {district} இல் {crop} சாகுபடியில் உங்களுக்கு உதவ முடியும். உங்களுக்கு என்ன தெரிய வேண்டும்?",
+        "tryAsking": "💡 இதைக் கேட்க முயற்சிக்கவும்:",
+        
+        // Suggestions
+        "paddyFertilizer": "மழைக்காலத்தில் நெல்லுக்கு சிறந்த உரங்கள்",
+        "paddyPests": "நெல் வயல்களில் பூச்சிகளை எவ்வாறு கட்டுப்படுத்துவது?",
+        "paddyWater": "நெல்லுக்கு உகந்த நீர் மேலாண்மை",
+        "paddyHarvest": "கேரளாவில் நெல் அறுவடை செய்யும் நேரம்?",
+        
+        "coconutFertilizer": "தென்னை மர உர அட்டவணை",
+        "coconutMite": "தென்னையில் மைட் தொற்றை எவ்வாறு தடுப்பது?",
+        "coconutIntercropping": "தென்னை மரங்களுடன் இன்டர்க்ராப்பிங்",
+        "coconutHarvest": "தென்னை அறுவடை முறைகள்",
+        
+        "bananaCare": "பருவமழைய期间 வாழைத் தாவர பராமரிப்பு",
+        "bananaVarieties": "கேரளாவிற்கான சிறந்த வாழை வகைகள்",
+        "bananaVirus": "வாழை பஞ்சி டாப் வைரஸை எவ்வாறு கட்டுப்படுத்துவது?",
+        "bananaSpacing": "வாழைத் தோட்ட இடைவெளி வழிகாட்டி",
+        
+        "farmingPractices": "தற்போதைய வானிலைக்கு சிறந்த விவசாய நடைமுறைகள்",
+        "soilImprovement": "மண் மேம்பாட்டு நுட்பங்கள்",
+        "waterConservation": "நீர் சேமிப்பு முறைகள்",
+        "organicFarming": "கேரளாவில் கரிம விவசாய உதவிக்குறிப்புகள்"
+      }
+    };
 
-    // Farmer info
-    document.getElementById("farmerInfo").innerHTML = `
-      <div class="detail-item"><b>Name:</b> ${params.get("farmerName") || "Not provided"}</div>
-      <div class="detail-item"><b>Phone:</b> ${params.get("phone") || "Not provided"}</div>
-      <div class="detail-item"><b>District:</b> ${params.get("district") || "Not provided"}</div>
-      <div class="detail-item"><b>Village:</b> ${params.get("village") || "Not provided"}</div>
-      <div class="detail-item"><b>Soil Type:</b> ${params.get("landType") || "Not provided"}</div>
-      <div class="detail-item"><b>Crop:</b> ${params.get("crop") || "Not provided"}</div>
-    `;
+    // Current language
+    let currentLang = 'en';
 
-    // Weather info
-    document.getElementById("temp").innerText = `${params.get("temp") || "N/A"}°C`;
-    document.getElementById("condition").innerText = params.get("condition") || "N/A";
-    document.getElementById("humidity").innerText = `${params.get("humidity") || "N/A"}%`;
-    document.getElementById("rain").innerText = `${params.get("rain_prob") || "N/A"}%`;
-    document.getElementById("wind").innerText = `${params.get("wind_speed") || "N/A"} km/h`;
+    // Function to change language
+    function changeLanguage(lang) {
+      currentLang = lang;
+      
+      // Update language buttons
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      
+      // Update all elements with data attributes, preserving value nodes if present
+      document.querySelectorAll('[data-en]').forEach(element => {
+        const t = element.dataset[lang];
+        if (!t) return;
 
-    // Advice with bullet + emojis
-    const advice = params.get("advice") || "No specific advice available. Please check your inputs and try again.";
-    const advicePoints = advice.split(/\. +/).filter(p => p.trim() !== "");
+        const tag = element.tagName;
+        if (tag === 'INPUT') {
+          element.placeholder = t;
+        } else if (tag === 'BUTTON' || tag === 'A') {
+          element.textContent = t;
+        } else {
+          // Keep existing <b id="..."> value element if present
+          const valueEl = element.querySelector('b[id]');
+          if (valueEl) {
+            const valueHTML = valueEl.outerHTML;
+            element.innerHTML = `${t} ${valueHTML}`;
+          } else {
+            element.textContent = t;
+          }
+        }
+      });
+      
+      // Update farmer details
+      updateFarmerDetails();
+      
+      // Update chatbot if open
+      if (document.getElementById('chatbotContainer').classList.contains('active')) {
+        initializeChatbot();
+      }
+    }
 
-    const icons = ["🌱","🌧️","🐛","💧","📍","🔍","🌾","📝"];
-    let adviceHTML = "<ul>";
-    advicePoints.forEach((point, i) => {
-      const icon = icons[i % icons.length]; // rotate icons
-      adviceHTML += `<li>${icon} ${point.trim()}.</li>`;
+    // Update farmer details with translations
+    function updateFarmerDetails() {
+      const params = new URLSearchParams(window.location.search);
+      
+      document.getElementById("farmerInfo").innerHTML = `
+        <div class="detail-item"><b>${translations[currentLang].farmerName}:</b> ${params.get("farmerName") || translations[currentLang].notProvided}</div>
+        <div class="detail-item"><b>${translations[currentLang].phone}:</b> ${params.get("phone") || translations[currentLang].notProvided}</div>
+        <div class="detail-item"><b>${translations[currentLang].district}:</b> ${params.get("district") || translations[currentLang].notProvided}</div>
+        <div class="detail-item"><b>${translations[currentLang].village}:</b> ${params.get("village") || translations[currentLang].notProvided}</div>
+        <div class="detail-item"><b>${translations[currentLang].landType}:</b> ${params.get("landType") || translations[currentLang].notProvided}</div>
+        <div class="detail-item"><b>${translations[currentLang].crop}:</b> ${params.get("crop") || translations[currentLang].notProvided}</div>
+      `;
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+
+      // Weather info
+      document.getElementById("temp").innerText = `${params.get("temp") || "N/A"}°C`;
+      document.getElementById("condition").innerText = `${params.get("condition") || "N/A"}`;
+      document.getElementById("humidity").innerText = `${params.get("humidity") || "N/A"}%`;
+      document.getElementById("rain").innerText = `${params.get("rain_prob") || "N/A"}%`;
+      document.getElementById("wind").innerText = `${params.get("wind_speed") || "N/A"} km/h`;
+
+      // console.log(params.get("temp"))
+
+      // Advice with bullet + emojis
+      const advice = params.get("advice") || "No specific advice available. Please check your inputs and try again.";
+      // console.log(advice)
+      const advicePoints = advice.split(/\. +/).filter(p => p.trim() !== "");
+
+      const icons = ["🌱","🌧️","🐛","💧","📍","🔍","🌾","📝"];
+      let adviceHTML = "<ul>";
+      advicePoints.forEach((point, i) => {
+        const icon = icons[i % icons.length]; // rotate icons
+        adviceHTML += `<li>${icon} ${point.trim()}.</li>`;
+      });
+      adviceHTML += "</ul>";
+
+      document.getElementById("adviceBox").innerHTML = adviceHTML;
+      
+      // Set up language buttons
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          changeLanguage(this.dataset.lang);
+        });
+      });
+      
+      // Initialize with English (safe: preserves weather values)
+      changeLanguage('en');
     });
-    adviceHTML += "</ul>";
-
-    document.getElementById("adviceBox").innerHTML = adviceHTML;
 
     // AI Chatbot functionality
     const aiChatIcon = document.getElementById('aiChatIcon');
@@ -450,37 +689,37 @@
 
     // Store farmer context for the chatbot
     const farmerContext = {
-      crop: params.get("crop") || "Not specified",
-      district: params.get("district") || "Not specified",
-      landType: params.get("landType") || "Not specified",
-      weather: `${params.get("temp") || "N/A"}°C, ${params.get("condition") || "N/A"}`
+      crop: (new URLSearchParams(window.location.search)).get("crop") || "Not specified",
+      district: (new URLSearchParams(window.location.search)).get("district") || "Not specified",
+      landType: (new URLSearchParams(window.location.search)).get("landType") || "Not specified",
+      weather: `${(new URLSearchParams(window.location.search)).get("temp") || "N/A"}°C, ${(new URLSearchParams(window.location.search)).get("condition") || "N/A"}`
     };
 
     // Crop-specific suggestions
     const cropSuggestions = {
       paddy: [
-        "Best fertilizers for paddy in rainy season",
-        "How to control pests in paddy fields?",
-        "Optimal water management for paddy",
-        "When to harvest paddy in Kerala?"
+        "paddyFertilizer",
+        "paddyPests",
+        "paddyWater",
+        "paddyHarvest"
       ],
       coconut: [
-        "Coconut tree fertilizer schedule",
-        "How to prevent coconut mite infestation?",
-        "Intercropping with coconut trees",
-        "Coconut harvesting techniques"
+        "coconutFertilizer",
+        "coconutMite",
+        "coconutIntercropping",
+        "coconutHarvest"
       ],
       banana: [
-        "Banana plant care during monsoon",
-        "Best banana varieties for Kerala",
-        "How to control banana bunchy top virus?",
-        "Banana plantation spacing guide"
+        "bananaCare",
+        "bananaVarieties",
+        "bananaVirus",
+        "bananaSpacing"
       ],
       default: [
-        "Best farming practices for current weather",
-        "Soil improvement techniques",
-        "Water conservation methods",
-        "Organic farming tips for Kerala"
+        "farmingPractices",
+        "soilImprovement",
+        "waterConservation",
+        "organicFarming"
       ]
     };
 
@@ -489,9 +728,9 @@
       
       const suggestionsHTML = `
         <div class="suggestions">
-          <div style="font-size: 14px; color: #666; margin-bottom: 8px;">💡 Try asking:</div>
-          ${suggestions.map(suggestion => 
-            `<div class="suggestion-chip" onclick="askSuggestion('${suggestion}')">${suggestion}</div>`
+          <div style="font-size: 14px; color: #666; margin-bottom: 8px;">${translations[currentLang].tryAsking}</div>
+          ${suggestions.map(suggestionKey => 
+            `<div class="suggestion-chip" onclick="askSuggestion('${translations[currentLang][suggestionKey]}')">${translations[currentLang][suggestionKey]}</div>`
           ).join('')}
         </div>
       `;
@@ -548,7 +787,8 @@
           },
           body: JSON.stringify({
             question: message,
-            context: farmerContext
+            context: farmerContext,
+            language: currentLang
           })
         });
 
@@ -576,7 +816,10 @@
     // Initialize chatbot with welcome message
     function initializeChatbot() {
       chatMessages.innerHTML = '';
-      addMessage(`Hello! I'm Krishi Sakhi AI. I can help you with ${farmerContext.crop} cultivation in ${farmerContext.district}. What would you like to know?`);
+      const welcomeMessage = translations[currentLang].welcomeMessage
+        .replace('{crop}', farmerContext.crop)
+        .replace('{district}', farmerContext.district);
+      addMessage(welcomeMessage);
       showSuggestions();
     }
 
